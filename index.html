@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="BizPilot — простой учёт товаров, продаж и расходов для небольшого бизнеса.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>BizPilot — управление бизнесом</title>
+<style>
+:root{--bg:#0b1020;--panel:#131a2c;--panel2:#192238;--line:#29334d;--text:#eef3ff;--muted:#9ba8c4;--green:#83f0b0;--blue:#8cb7ff;--red:#ff8f9b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#1c2b4a 0,#0b1020 42%);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:1180px;margin:auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#8df5b9,#8cb7ff);display:grid;place-items:center;color:#09111e;font-weight:900;font-size:21px}.brand h1{font-size:21px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.badge{border:1px solid #315744;background:#12291f;color:var(--green);padding:8px 12px;border-radius:99px;font-size:12px}
+h2{font-size:25px;margin:0 0 6px}.sub{color:var(--muted);margin:0 0 22px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.card,.panel{background:linear-gradient(145deg,rgba(25,34,56,.97),rgba(17,24,41,.97));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 12px 35px #00000012}.stat-label{font-size:12px;color:var(--muted)}.stat-value{font-size:27px;font-weight:750;margin:8px 0 4px;letter-spacing:-.6px}.stat-note{font-size:12px;color:var(--green)}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.panel-title h3{margin:0;font-size:17px}.pill{font-size:11px;color:var(--blue);background:#1b2b48;padding:6px 9px;border-radius:99px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:12px;color:var(--muted)}input,select{width:100%;border:1px solid var(--line);background:#0d1425;color:var(--text);border-radius:10px;padding:11px 12px;font:inherit;outline:none}input:focus,select:focus{border-color:#739eff}button{border:0;border-radius:10px;padding:11px 14px;background:var(--green);color:#0b1720;font-weight:750;font:inherit;cursor:pointer}button:hover{filter:brightness(1.06)}button.secondary{background:#25314b;color:var(--text)}button.danger{background:#3a202d;color:var(--red);padding:7px 10px;font-size:12px}.form-actions{display:flex;gap:8px;grid-column:1/-1;flex-wrap:wrap}.list{display:flex;flex-direction:column;gap:9px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#0d1425;border:1px solid #222d45;border-radius:12px}.row-main{min-width:0}.row-name{font-weight:650;overflow-wrap:anywhere}.row-meta{font-size:12px;color:var(--muted);margin-top:3px}.row-right{text-align:right;white-space:nowrap}.money{font-weight:750}.positive{color:var(--green)}.negative{color:var(--red)}.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}.section{margin-top:16px}.hint{font-size:12px;color:var(--muted);margin-top:12px}.bar-wrap{height:8px;background:#28324a;border-radius:99px;overflow:hidden;margin-top:8px}.bar{height:100%;background:linear-gradient(90deg,#83f0b0,#8cb7ff);border-radius:99px}.foot{color:#71809f;font-size:11px;text-align:center;margin:22px 0 8px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#eafff1;color:#10251b;padding:11px 16px;border-radius:12px;font-weight:650;box-shadow:0 8px 30px #0005;display:none;z-index:5}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.app{padding:15px}.stat-value{font-size:23px}}
+@media(max-width:420px){.top{align-items:flex-start}.badge{max-width:125px;text-align:center}.stats{gap:9px}.card{padding:14px}.stat-value{font-size:21px}form{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">B</div><div><h1>BizPilot</h1><p>Управляй бизнесом проще</p></div></div>
+    <div class="badge">● Демо-версия · данные на устройстве</div>
+  </header>
+  <main>
+    <h2>Обзор бизнеса</h2><p class="sub">Простой учёт товаров, продаж и расходов для небольшого магазина.</p>
+    <section class="stats">
+      <div class="card"><div class="stat-label">Выручка</div><div class="stat-value" id="revenue">0 ₸</div><div class="stat-note">Все добавленные продажи</div></div>
+      <div class="card"><div class="stat-label">Расходы</div><div class="stat-value" id="expenses">0 ₸</div><div class="stat-note">Внесённые затраты</div></div>
+      <div class="card"><div class="stat-label">Прибыль*</div><div class="stat-value" id="profit">0 ₸</div><div class="stat-note">Выручка минус расходы</div></div>
+      <div class="card"><div class="stat-label">Товары</div><div class="stat-value" id="productCount">0</div><div class="stat-note" id="lowStock">Нет товаров</div></div>
+    </section>
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-title"><h3>＋ Добавить товар</h3><span class="pill">Склад</span></div>
+        <form id="productForm">
+          <div class="field full"><label for="pname">Название товара</label><input id="pname" placeholder="Например, Футболка" required maxlength="70"></div>
+          <div class="field"><label for="pcost">Закупочная цена (₸)</label><input id="pcost" type="number" min="0" step="1" placeholder="2500" required></div>
+          <div class="field"><label for="pprice">Цена продажи (₸)</label><input id="pprice" type="number" min="0" step="1" placeholder="4500" required></div>
+          <div class="field"><label for="pqty">Количество на складе</label><input id="pqty" type="number" min="0" step="1" placeholder="10" required></div>
+          <div class="field"><label for="pthreshold">Предупреждать при остатке</label><input id="pthreshold" type="number" min="0" step="1" value="3" required></div>
+          <div class="form-actions"><button type="submit">Добавить товар</button></div>
+        </form>
+        <div class="section"><div class="panel-title"><h3>Товары на складе</h3><span class="pill" id="stockPill">0 позиций</span></div><div class="list" id="productsList"></div></div>
+      </section>
+      <section>
+        <div class="panel">
+          <div class="panel-title"><h3>＋ Записать продажу</h3><span class="pill">Продажи</span></div>
+          <form id="saleForm">
+            <div class="field full"><label for="saleProduct">Товар</label><select id="saleProduct" required><option value="">Сначала добавьте товар</option></select></div>
+            <div class="field"><label for="saleQty">Количество</label><input id="saleQty" type="number" min="1" step="1" value="1" required></div>
+            <div class="field"><label for="salePrice">Цена за единицу (₸)</label><input id="salePrice" type="number" min="0" step="1" required></div>
+            <div class="form-actions"><button type="submit">Сохранить продажу</button></div>
+          </form>
+        </div>
+        <div class="panel section">
+          <div class="panel-title"><h3>＋ Добавить расход</h3><span class="pill">Расходы</span></div>
+          <form id="expenseForm">
+            <div class="field full"><label for="expenseName">На что потратили?</label><input id="expenseName" placeholder="Например, доставка" maxlength="70" required></div>
+            <div class="field full"><label for="expenseAmount">Сумма (₸)</label><input id="expenseAmount" type="number" min="1" step="1" placeholder="5000" required></div>
+            <div class="form-actions"><button type="submit">Сохранить расход</button></div>
+          </form>
+        </div>
+      </section>
+    </div>
+    <section class="panel section">
+      <div class="panel-title"><h3>Последние операции</h3><button class="secondary" id="exportBtn" type="button">Экспорт CSV</button></div>
+      <div class="list" id="operationsList"></div>
+      <p class="hint">* Это упрощённая оценка: себестоимость проданных товаров и налоги отдельно не вычитаются. Для реального бизнеса проверьте расчёты с бухгалтером.</p>
+    </section>
+  </main>
+  <div class="foot">BizPilot · учебный прототип для конкурса «Монетизация идей» · не является бухгалтерской системой</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='bizpilot-demo-v1';
+let state=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{products:[],sales:[],expenses:[]}}catch{return {products:[],sales:[],expenses:[]}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+function fmt(n){return new Intl.NumberFormat('ru-KZ',{maximumFractionDigits:0}).format(n||0)+' ₸'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2300)}
+function render(){
+ const revenue=state.sales.reduce((s,x)=>s+x.total,0), expenses=state.expenses.reduce((s,x)=>s+x.amount,0);
+ document.getElementById('revenue').textContent=fmt(revenue);
+ document.getElementById('expenses').textContent=fmt(expenses);
+ const profit=document.getElementById('profit');profit.textContent=fmt(revenue-expenses);profit.className='stat-value '+(revenue-expenses<0?'negative':'positive');
+ document.getElementById('productCount').textContent=state.products.length;
+ const low=state.products.filter(p=>p.qty<=p.threshold);
+ document.getElementById('lowStock').textContent=low.length?`⚠️ Мало товара: ${low.length}`:'Остатков хватает';
+ document.getElementById('stockPill').textContent=state.products.length+' позиций';
+ document.getElementById('productsList').innerHTML=state.products.length?state.products.map(p=>`<div class="row"><div class="row-main"><div class="row-name">${esc(p.name)}</div><div class="row-meta">Закупка ${fmt(p.cost)} · Продажа ${fmt(p.price)}<div class="bar-wrap"><div class="bar" style="width:${Math.max(3,Math.min(100,p.qty/Math.max(p.threshold*3,10)*100))}%"></div></div></div></div><div class="row-right"><div class="money ${p.qty<=p.threshold?'negative':'positive'}">${p.qty} шт.</div><button class="danger" onclick="removeProduct('${p.id}')">Удалить</button></div></div>`).join(''):'<div class="empty">Пока нет товаров. Добавьте первый товар выше.</div>';
+ const sel=document.getElementById('saleProduct'), old=sel.value;
+ sel.innerHTML=state.products.length?'<option value="">Выберите товар</option>'+state.products.map(p=>`<option value="${p.id}">${esc(p.name)} — ${p.qty} шт.</option>`).join(''):'<option value="">Сначала добавьте товар</option>';
+ if(state.products.some(p=>p.id===old))sel.value=old;
+ syncSalePrice();
+ const ops=[...state.sales.map(x=>({...x,kind:'sale',date:x.date})),...state.expenses.map(x=>({...x,kind:'expense',date:x.date}))].sort((a,b)=>b.date-a.date).slice(0,12);
+ document.getElementById('operationsList').innerHTML=ops.length?ops.map(x=>`<div class="row"><div class="row-main"><div class="row-name">${x.kind==='sale'?'Продажа: '+esc(x.name):'Расход: '+esc(x.name)}</div><div class="row-meta">${new Date(x.date).toLocaleString('ru-KZ',{dateStyle:'medium',timeStyle:'short'})}${x.kind==='sale'?' · '+x.qty+' шт.':''}</div></div><div class="row-right money ${x.kind==='sale'?'positive':'negative'}">${x.kind==='sale'?'+':'−'}${fmt(x.kind==='sale'?x.total:x.amount)}</div></div>`).join(''):'<div class="empty">Операций пока нет. Добавьте товар, затем запишите продажу или расход.</div>';
+}
+function syncSalePrice(){const p=state.products.find(p=>p.id===document.getElementById('saleProduct').value);if(p)document.getElementById('salePrice').value=p.price}
+document.getElementById('saleProduct').addEventListener('change',syncSalePrice);
+document.getElementById('productForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('pname').value.trim(),cost=+document.getElementById('pcost').value,price=+document.getElementById('pprice').value,qty=+document.getElementById('pqty').value,threshold=+document.getElementById('pthreshold').value;if(!name||![cost,price,qty,threshold].every(Number.isFinite)||cost<0||price<0||qty<0||threshold<0)return toast('Проверьте введённые значения');state.products.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name,cost,price,qty,threshold});e.target.reset();document.getElementById('pthreshold').value=3;save();toast('Товар добавлен')});
+document.getElementById('saleForm').addEventListener('submit',e=>{e.preventDefault();const p=state.products.find(p=>p.id===document.getElementById('saleProduct').value),qty=+document.getElementById('saleQty').value,price=+document.getElementById('salePrice').value;if(!p)return toast('Сначала выберите товар');if(!Number.isFinite(qty)||qty<1||qty>p.qty)return toast('Недостаточно товара на складе');if(!Number.isFinite(price)||price<0)return toast('Проверьте цену продажи');p.qty-=qty;state.sales.push({id:String(Date.now()),name:p.name,qty,price,total:qty*price,date:Date.now()});e.target.reset();document.getElementById('saleQty').value=1;save();toast('Продажа сохранена')});
+document.getElementById('expenseForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('expenseName').value.trim(),amount=+document.getElementById('expenseAmount').value;if(!name||!Number.isFinite(amount)||amount<=0)return toast('Введите название и сумму расхода');state.expenses.push({id:String(Date.now()),name,amount,date:Date.now()});e.target.reset();save();toast('Расход сохранён')});
+function removeProduct(id){const p=state.products.find(p=>p.id===id);if(!p)return;if(!confirm(`Удалить товар «${p.name}»? История продаж останется.`))return;state.products=state.products.filter(p=>p.id!==id);save();toast('Товар удалён')}
+document.getElementById('exportBtn').addEventListener('click',()=>{const rows=[['Тип','Название','Количество','Цена','Сумма','Дата'],...state.sales.map(x=>['Продажа',x.name,x.qty,x.price,x.total,new Date(x.date).toISOString()]),...state.expenses.map(x=>['Расход',x.name,'','',x.amount,new Date(x.date).toISOString()])];const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='bizpilot-operations.csv';a.click();URL.revokeObjectURL(url)});
+render();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
